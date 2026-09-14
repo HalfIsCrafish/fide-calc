@@ -1,0 +1,78 @@
+import math
+from app.engine.models import Game
+from app.engine.tables import DP_TABLE, RATING_FLOORS_TABLE
+
+
+def filter_played_games(games: list[Game]) -> list[Game]:
+    """Function to filter the list of games to only include those that 
+    have been played and have an opponent."""
+
+    valid_games: list[Game] = []
+    for game in games:
+        if game.is_played and game.opponent is not None: # check if the game has been played and has an opponent
+            valid_games.append(game) # add the game to the list of valid games
+    return valid_games
+
+def apply_rating_floor(ratings: list[int], target_title: str) -> list[int]:
+    """Function to apply the rating floor for the target title to the list of ratings."""
+
+    if not ratings: # if the list of ratings is empty, return an empty list
+        return []
+
+    adjusted_ratings = sorted(ratings) # sort the ratings in ascending order
+    floor = RATING_FLOORS_TABLE.get(target_title, 1400) # get the rating floor for the target title, default to 1400 if not found
+
+    if adjusted_ratings[0] < floor:
+        adjusted_ratings[0] = floor
+
+    return adjusted_ratings
+
+def calculate_rating_average(games: list[Game], target_title: str) -> float:
+    """Function to calculate the average rating based on the games played, the target title and 1.4.7 with rounding half up to the nearest integer."""
+    
+    if not games: # if the list of games is empty, return 0.0
+        return 0.0 
+
+    raw_ratings: list[int] = []
+    for game in games:
+        raw_ratings.append(game.opponent.rating)
+
+    adjusted_ratings = apply_rating_floor(raw_ratings, target_title)
+
+    total_rating = 0
+    for r in adjusted_ratings: # sum the adjusted ratings
+        total_rating += r
+
+    avg = total_rating / len(adjusted_ratings)
+    return math.floor(avg + 0.5) # round half up to the nearest integer
+
+def calculate_total_points(games: list[Game]) -> float:
+    """Function to calculate the total points scored in the tournament 
+    based on the games played."""    
+
+    total_points = 0.0
+    for g in games: 
+        total_points += g.points # sum the points scored in each game
+    return total_points
+
+def get_dp(score_percentage: float) -> int:
+    """Function to get the DP value based on the score percentage using the DP_TABLE. All percentages are rounded to the nearest whole number. 0.5% is rounded up."""
+
+    p_percent = math.floor(score_percentage * 100 + 0.5) # round the score percentage to the nearest integer
+    p_clamped = max(0, min(100, p_percent)) # clamp the percentage to be between 0 and 100
+    return DP_TABLE[p_clamped / 100] # return the DP value from the DP_TABLE based on the clamped percentage
+
+def calculate_performance(games: list[Game], target_title: str) -> float:
+    """Function to calculate the performance rating based on the games played and the target title."""
+
+    played_games = filter_played_games(games)
+    if not played_games: # if there are no played games, return 0.0
+        return 0.0
+
+    ra = calculate_rating_average(played_games, target_title) # calculate the average rating of the opponents
+    total_points = calculate_total_points(played_games) # calculate the total points scored in the tournament
+    
+    score_percentage = total_points / len(played_games) # calculate the score percentage based on the total points and the number of played games
+    dp = get_dp(score_percentage) # get the DP value based on the score percentage
+
+    return ra + dp #return the performance rating based on the average rating and the DP value
