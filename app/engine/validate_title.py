@@ -1,4 +1,5 @@
 import math
+from app.engine.calculator import filter_played_games
 from app.engine.models import Game
 from app.engine.tables import HANDBOOK_TITLES, REQUIRED_TITLES_TABLE
 
@@ -8,9 +9,8 @@ def titled_opponent(games: list[Game]) -> int:
 
     count = 0
     for game in games:
-        if game.is_played and game.opponent is not None:
-            if game.opponent.title in HANDBOOK_TITLES: # check if the opponent has a title
-                count += 1 
+        if game.opponent.title in HANDBOOK_TITLES: # check if the opponent has a title
+            count += 1 
     return count
 
 def required_titled_opponent(games: list[Game], target_title: str) -> int:
@@ -23,28 +23,25 @@ def required_titled_opponent(games: list[Game], target_title: str) -> int:
     valid_titles = REQUIRED_TITLES_TABLE.get(target_title, set())
     count = 0
     for game in games:
-        if game.is_played and game.opponent is not None:
-            if game.opponent.title in valid_titles:
-                count += 1
+        if game.opponent.title in valid_titles:
+            count += 1
     return count
 
 def validate_title_requirements(games: list[Game], target_title: str) -> bool:
     """Function to validate if the title requirements are met based on the games played and the target title."""
 
-    played_games_count = 0
-    for game in games:
-        if game.is_played and game.opponent is not None:
-            played_games_count += 1
+    played_games = filter_played_games(games)
+    total_played_games = len(played_games)
 
-    if played_games_count == 0:
+    if total_played_games == 0:
         return False
 
-    min_titled = math.ceil(played_games_count * 0.5)
-    if titled_opponent(games) < min_titled:
+    min_titled = math.ceil(total_played_games * 0.5)
+    if titled_opponent(played_games) < min_titled:
         return False
 
-    min_required = max(3, math.ceil(played_games_count / 3))
-    if required_titled_opponent(games, target_title) < min_required:
+    min_required = max(3, math.ceil(total_played_games / 3))
+    if required_titled_opponent(played_games, target_title) < min_required:
         return False
     
     return True
