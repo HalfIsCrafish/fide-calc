@@ -128,5 +128,13 @@ DP_TABLE: dict[float, int] = {
     0.00: -800,
 }
 
+# 1.4.5 Titles of opponents
+HANDBOOK_TITLES = {"GM", "IM", "FM", "WGM", "WIM", "WFM"}
 
-
+# 1.4.5 Required titles for different titles
+REQUIRED_TITLES_TABLE = {
+    "GM": {"GM"},
+    "IM": {"GM", "IM"},
+    "WGM": {"GM", "IM", "WGM"},
+    "WIM": {"GM", "IM", "WGM", "WIM"},
+}
