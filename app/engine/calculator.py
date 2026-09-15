@@ -27,11 +27,11 @@ def apply_rating_floor(ratings: list[int], target_title: str) -> list[int]:
 
     return adjusted_ratings
 
-def calculate_rating_average(games: list[Game], target_title: str) -> float:
+def calculate_rating_average(games: list[Game], target_title: str) -> int:
     """Function to calculate the average rating based on the games played, the target title and 1.4.7 with rounding half up to the nearest integer."""
     
-    if not games: # if the list of games is empty, return 0.0
-        return 0.0 
+    if not games: # if the list of games is empty, return 0
+        return 0
 
     raw_ratings: list[int] = []
     for game in games:
@@ -60,14 +60,14 @@ def get_dp(score_percentage: float) -> int:
 
     p_percent = math.floor(score_percentage * 100 + 0.5) # round the score percentage to the nearest integer
     p_clamped = max(0, min(100, p_percent)) # clamp the percentage to be between 0 and 100
-    return DP_TABLE[p_clamped / 100] # return the DP value from the DP_TABLE based on the clamped percentage
+    return DP_TABLE[round(p_clamped / 100, 2)] # return the DP value from the DP_TABLE based on the clamped percentage
 
-def calculate_performance(games: list[Game], target_title: str) -> float:
+def calculate_performance(games: list[Game], target_title: str) -> int:
     """Function to calculate the performance rating based on the games played and the target title."""
 
     played_games = filter_played_games(games)
-    if not played_games: # if there are no played games, return 0.0
-        return 0.0
+    if not played_games: # if there are no played games, return 0
+        return 0
 
     ra = calculate_rating_average(played_games, target_title) # calculate the average rating of the opponents
     total_points = calculate_total_points(played_games) # calculate the total points scored in the tournament
@@ -75,4 +75,4 @@ def calculate_performance(games: list[Game], target_title: str) -> float:
     score_percentage = total_points / len(played_games) # calculate the score percentage based on the total points and the number of played games
     dp = get_dp(score_percentage) # get the DP value based on the score percentage
 
-    return ra + dp #return the performance rating based on the average rating and the DP value
+    return ra + dp # return the performance rating based on the average rating and the DP value

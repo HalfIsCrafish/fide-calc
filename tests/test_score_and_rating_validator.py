@@ -4,6 +4,7 @@ from app.engine.score_and_rating_validator import (
     minimum_score_percentage,
     validate_minimum_average_rating,
     validate_minimum_score,
+    validate_performance_rating
 )
 
 def make_test_game(points: float, rating: int = 2400, is_played: bool = True) -> Game:
@@ -63,3 +64,34 @@ def test_validate_minimum_average_rating_invalid_title_or_empty():
     games = [make_test_game(0.5, rating=2450) for _ in range(9)]
     assert validate_minimum_average_rating(games, "INVALID_TITLE") is False
     assert validate_minimum_average_rating([], "GM") is False
+
+def test_validate_performance_rating_normal_gm_pass():
+    games = [make_test_game(1.0, rating=2450) for _ in range(5)] + [
+        make_test_game(0.5, rating=2450) for _ in range(4)
+    ]
+    assert validate_performance_rating(games, "GM") is True
+
+def test_validate_performance_rating_normal_gm_fail():
+    games = [make_test_game(0.5, rating=2450) for _ in range(9)]
+    assert validate_performance_rating(games, "GM") is False
+
+def test_validate_performance_rating_11_rounds_im_pass():
+    games = [make_test_game(1.0, rating=2330) for _ in range(4)] + [
+        make_test_game(0.5, rating=2330) for _ in range(7)
+    ]
+    assert validate_performance_rating(games, "IM") is True
+
+
+def test_validate_performance_rating_11_rounds_im_fail():
+    games = [make_test_game(0.5, rating=2300) for _ in range(11)]
+    assert validate_performance_rating(games, "IM") is False
+
+
+def test_validate_performance_rating_edge_cases():
+    assert validate_performance_rating([], "GM") is False
+
+    valid_games = [make_test_game(1.0, rating=2600) for _ in range(9)]
+    assert validate_performance_rating(valid_games, "UNKNOWN_TITLE") is False
+
+    unplayed_games = [make_test_game(1.0, rating=2600, is_played=False) for _ in range(9)]
+    assert validate_performance_rating(unplayed_games, "GM") is False
