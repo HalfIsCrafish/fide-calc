@@ -56,10 +56,11 @@ def test_calculate_rating_average():
 def test_calculate_total_points():
     """function to test the calculate_total_points function to ensure it correctly calculates the total points scored in the tournament."""
 
+    opponent = Opponent(name="P1", rating=2000, federation="POL")
     games = [
-        Game(round_number=1, opponent=None, points=1.0, color="w", is_played=True),
-        Game(round_number=2, opponent=None, points=0.5, color="b", is_played=True),
-        Game(round_number=3, opponent=None, points=0.0, color="w", is_played=True),
+        Game(round_number=1, opponent=opponent, points=1.0, color="w", is_played=True),
+        Game(round_number=2, opponent=opponent, points=0.5, color="b", is_played=True),
+        Game(round_number=3, opponent=opponent, points=0.0, color="w", is_played=True),
     ]
     assert calculate_total_points(games) == 1.5
     assert calculate_total_points([]) == 0.0
