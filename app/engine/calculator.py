@@ -29,12 +29,13 @@ def apply_rating_floor(ratings: list[int], target_title: str) -> list[int]:
 
 def calculate_rating_average(games: list[Game], target_title: str) -> int:
     """Function to calculate the average rating based on the games played, the target title and 1.4.7 with rounding half up to the nearest integer."""
-    
-    if not games: # if the list of games is empty, return 0
+
+    played_games = filter_played_games(games)
+    if not played_games: # if the list of games is empty, return 0
         return 0
 
     raw_ratings: list[int] = []
-    for game in games:
+    for game in played_games:
         raw_ratings.append(game.opponent.rating)
 
     adjusted_ratings = apply_rating_floor(raw_ratings, target_title)
@@ -50,9 +51,10 @@ def calculate_total_points(games: list[Game]) -> float:
     """Function to calculate the total points scored in the tournament 
     based on the games played."""    
 
+    played_games = filter_played_games(games)
     total_points = 0.0
-    for g in games: 
-        total_points += g.points # sum the points scored in each game
+    for game in played_games: 
+        total_points += game.points # sum the points scored in each game
     return total_points
 
 def get_dp(score_percentage: float) -> int:
