@@ -25,6 +25,23 @@ def build_player_url(tournament_url: str, snr: int) -> str:
 
     return urlunparse(parsed._replace(query=new_query))
 
+def parse_player_own_federation(html: str) -> str:
+    """Parses player's own federation from the player info card HTML."""
+
+    soup = BeautifulSoup(html, "html.parser")
+
+    column_aliases: list[str] = ["Federation", "FED", "Fed", "Fed."]
+
+    for table in soup.find_all("table", class_="CRs1"):
+        rows = table.find_all("tr", recursive=False)
+        for row in rows:
+            cells = row.find_all("td", recursive=False)
+            if len(cells) >= 2:
+                field_name = cells[0].get_text(strip=True)
+                if field_name in column_aliases:
+                    return cells[1].get_text(strip=True)
+
+    raise ValueError("Did not find player federation")
 
 def parse_tournament_players(html: str) -> list[dict]:
     """Parses starting list from HTML string."""
@@ -196,6 +213,10 @@ def parse_player_matches(html: str) -> list[dict]:
 
     return matches
 
+def get_player_own_federation(url: str) -> str:
+    """Fetches and parses player's own federation from player card URL."""
+    html = fetch_html(url)
+    return parse_player_own_federation(html)
 
 def get_tournament_players(url: str) -> list[dict]:
     """Fetches and parses players from tournament starting list URL."""
