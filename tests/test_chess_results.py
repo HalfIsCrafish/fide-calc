@@ -32,6 +32,7 @@ def test_parse_player_matches_first_round(player_matches_html: str):
     assert first_match["Rtg"] == "2016"
     assert first_match["FED"] == "ITA"
     assert first_match["Res."] == "½"
+    assert first_match["Color"] in ["w", "b"]
 
 
 def test_parse_player_matches_win_and_loss_results(player_matches_html: str):
@@ -44,13 +45,22 @@ def test_parse_player_matches_win_and_loss_results(player_matches_html: str):
     assert matches[5]["Rtg"] == "2529"
     assert matches[5]["FED"] == "LTU"
     assert matches[5]["Res."] == "1"
+    assert matches[5]["Color"] in ["w", "b"]
 
     assert matches[6]["Rd."] == "7"
     assert matches[6]["Name"] == "Glek, Igor"
     assert matches[6]["Rtg"] == "2429"
     assert matches[6]["FED"] == "BEL"
     assert matches[6]["Res."] == "0"
+    assert matches[6]["Color"] in ["w", "b"]
 
+def test_parse_player_matches_colors_extracted(player_matches_html: str):
+    """Function to test parse_player_matches extracts piece colors correctly."""
+
+    matches = parse_player_matches(player_matches_html)
+
+    assert matches[0]["Color"] == "b"
+    assert matches[1]["Color"] == "w"
 
 def test_parse_player_matches_missing_table():
     """Function to test parse_player_matches raises ValueError when table is missing."""

@@ -178,12 +178,20 @@ def parse_player_matches(html: str) -> list[dict]:
         if not cells or len(cells) <= max_idx:
             continue
 
+        res_cell = cells[header_indices["Res."]]
+        color = None
+        if res_cell.find("div", class_="FarbewT"):
+            color = "w"
+        elif res_cell.find("div", class_="FarbesT"):
+            color = "b"
+
         matches.append({
             "Rd.": cells[header_indices["Rd."]].get_text(strip=True),
             "Name": cells[header_indices["Name"]].get_text(strip=True),
             "Rtg": cells[header_indices["Rtg"]].get_text(strip=True),
             "FED": cells[header_indices["FED"]].get_text(strip=True),
             "Res.": cells[header_indices["Res."]].get_text(strip=True),
+            "Color": color
         })
 
     return matches
