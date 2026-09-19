@@ -1,7 +1,7 @@
 from pathlib import Path
 import pytest
 
-from app.parser.chess_results import parse_player_matches
+from app.parser.chess_results import parse_player_matches, parse_player_own_federation
 
 
 @pytest.fixture
@@ -78,3 +78,22 @@ def test_parse_player_matches_missing_required_column():
 
     with pytest.raises(KeyError, match="Missing columns"):
         parse_player_matches(incomplete_html)
+
+def test_parse_player_own_federation(player_matches_html: str):
+    """Tests parsing the player's own federation from the player card."""
+
+    federation = parse_player_own_federation(player_matches_html)
+
+    assert federation == "POL"
+
+
+def test_parse_player_own_federation_does_not_return_opponent_federation(
+    player_matches_html: str,
+):
+    """Tests that the player's federation is not taken from match rows."""
+
+    federation = parse_player_own_federation(player_matches_html)
+
+    assert federation != "ITA"
+    assert federation != "CRO"
+    assert federation == "POL"
