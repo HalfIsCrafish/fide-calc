@@ -28,6 +28,7 @@ def test_parse_player_matches_first_round(player_matches_html: str):
     first_match = matches[0]
 
     assert first_match["Rd."] == "1"
+    assert first_match["Title"] == ""
     assert first_match["Name"] == "Filippone, Matteo"
     assert first_match["Rtg"] == "2016"
     assert first_match["FED"] == "ITA"
@@ -41,6 +42,7 @@ def test_parse_player_matches_win_and_loss_results(player_matches_html: str):
     matches = parse_player_matches(player_matches_html)
 
     assert matches[5]["Rd."] == "6"
+    assert matches[5]["Title"] == "GM"
     assert matches[5]["Name"] == "Pultinevicius, Paulius"
     assert matches[5]["Rtg"] == "2529"
     assert matches[5]["FED"] == "LTU"

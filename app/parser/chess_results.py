@@ -188,6 +188,7 @@ def parse_player_matches(html: str) -> list[dict]:
 
     matches: list[dict] = []
     rows = target_table.find_all("tr", recursive=False)
+    name_idx = header_indices["Name"]
     max_idx = max(header_indices.values())
 
     for row in rows[1:]:
@@ -204,6 +205,7 @@ def parse_player_matches(html: str) -> list[dict]:
 
         matches.append({
             "Rd.": cells[header_indices["Rd."]].get_text(strip=True),
+            "Title": cells[name_idx - 1].get_text(strip=True),
             "Name": cells[header_indices["Name"]].get_text(strip=True),
             "Rtg": cells[header_indices["Rtg"]].get_text(strip=True),
             "FED": cells[header_indices["FED"]].get_text(strip=True),
