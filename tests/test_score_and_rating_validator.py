@@ -1,6 +1,6 @@
 import pytest
 from app.engine.models import Game, Opponent
-from app.engine.score_and_rating_validator import (
+from app.engine.validate_score_and_rating import (
     minimum_score_percentage,
     validate_minimum_average_rating,
     validate_minimum_score,
