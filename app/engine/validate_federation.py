@@ -22,7 +22,7 @@ def own_federation_opponents(games: list[Game], applicant_federation: str) -> in
     return count
 
 def largest_foreign_federation_opponents(games: list[Game], applicant_federation: str) -> int:
-    """Function to count the number of unique foreign federations. 1.4.4 'maximum of 2/3 of the opponents from one federation'."""
+    """Return the largest number of opponents from one foreign federation. 1.4.4 'maximum of 2/3 of the opponents from one federation'."""
 
     counts: dict[str, int] = {}
     for game in games:
@@ -48,7 +48,7 @@ def validate_federation_requirements(games: list[Game], applicant_federation: st
     if own_federation_opponents(played_games, applicant_federation) > own_limit:
         return False
 
-    single_foreign_limit = math.ceil(total_played_games * 2 / 3)
+    single_foreign_limit = math.floor(total_played_games * 2 / 3)
     if largest_foreign_federation_opponents(played_games, applicant_federation) > single_foreign_limit:
         return False
 
